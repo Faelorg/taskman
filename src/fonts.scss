@@ -1,0 +1,15 @@
+@mixin font($font-family, $font-file) {
+    @font-face {
+        font-family: $font-family;
+        src: url($font-file+'.eot');
+        src: url($font-file+'.eot?#iefix') format('embedded-opentype'),
+             url($font-file+'.woff') format('woff'),
+             url($font-file+'.ttf') format('truetype');
+        font-style: normal;
+    }
+}
+
+@include font('AsapMedium', './assets/fonts/Asap Medium');
+@include font('AsapSemibold', './assets/fonts/Asap SemiBold');
+@include font('AsapBold', './assets/fonts/Asap Bold');
+@include font('AsapMediumItalic', './assets/fonts/Asap Medium Italic');

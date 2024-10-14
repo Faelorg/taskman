@@ -34,14 +34,14 @@
 <style scoped>
 
 #main-container{
-    grid-template-columns: 100px 1fr;
+    grid-template-columns: 60px 1fr;
     height: 100%;
     overflow: hidden;
 }
 
 
 nav{
-    grid-auto-rows: 100px;
+    grid-auto-rows: 60px;
     border-right-width: 1px;
 }
 

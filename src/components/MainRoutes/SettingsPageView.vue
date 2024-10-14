@@ -1,9 +1,11 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
-    <p>settings</p>
+  <div class="grid-container">
+    <nav></nav>
+
+    <RouterView />
+  </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

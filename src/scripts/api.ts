@@ -4,4 +4,8 @@ const loginAPI = (login: string, password: string) => {
 
 const restoreAPI = (email: string) => {};
 
-export { loginAPI, restoreAPI };
+const getCompanyNameAPI = () => {
+  return "something";
+};
+
+export { loginAPI, restoreAPI, getCompanyNameAPI };

@@ -1,17 +1,16 @@
-@use 'sass:color';
-@mixin hover($color){
-    &:hover{
-        background-color: darken($color,3%);
-        box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.45) inset;
-        transition: 0.5s;
-    }
+@use "sass:color";
+@mixin hover($color) {
+  &:hover {
+    background-color: darken($color, 3%);
+    box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.45) inset;
+    transition: 0.5s;
+  }
 }
 
-@mixin active($color){
-    &:active{
-        background-color: darken($color,8%);
-        box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.45) inset;
-        transition: 0.5s;
-    }
+@mixin active($color) {
+  &:active {
+    background-color: darken($color, 8%);
+    box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.45) inset;
+    transition: 0.5s;
+  }
 }
-

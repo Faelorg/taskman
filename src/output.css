@@ -352,25 +352,17 @@ html {
   font-weight: bold;
 }
 
-button.sb-bg {
-  background-color: #188700;
-}
 button.sb-bg:hover {
-  background-color: #188700;
   filter: brightness(95%);
   box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.45) inset;
   transition: 0.5s;
 }
 button.sb-bg:active {
-  background-color: #188700;
   filter: brightness(90%);
   box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.45) inset;
   transition: 0.5s;
 }
 
-button.cb-bg {
-  background-color: #86000c;
-}
 button.cb-bg:hover {
   filter: brightness(95%);
   box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.45) inset;
@@ -382,9 +374,6 @@ button.cb-bg:active {
   transition: 0.5s;
 }
 
-button.tb-bg {
-  background-color: #025c96;
-}
 button.tb-bg:hover {
   filter: brightness(95%);
   box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.45) inset;

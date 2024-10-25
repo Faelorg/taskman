@@ -168,13 +168,12 @@ router.beforeEach((to, from) => {
     }
   }
 
-  if (to.path.includes("add") && to.path.includes("person")) {
+  if (to.path.includes("add") && to.path.includes("people")) {
     if (!document.cookie.includes("admin")) {
       return {
-        name: "person",
+        name: "people",
         params: {
           companyName: getCompanyNameAPI(),
-          idPerson: to.params.idPerson,
         },
       };
     }

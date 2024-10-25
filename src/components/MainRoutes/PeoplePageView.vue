@@ -84,30 +84,31 @@ function openCreateMode() {
         <div
           v-for="user of users"
           id="element"
-          class="grid-container pc-bg w-100 ph-10 br-10 ph-10 bw-1 fs-18 oc-bc bs-element ac-center h-100"
-          @click="openEditMode(user)"
+          class="grid-container pc-bg w-100 ph-10 br-10 ph-10 bw-1 fs-18 oc-bc bs-element ac-center h-100"       
         >
-          <div
-            class="grid-container h-100 ph-10 jc-center ji-center ai-center ac-center"
-            id="border"
-          >
+          <div class="grid-container w-100 h-100" id="element-row">
             <input
-              type="checkbox"
-              v-model="user.selected"
-              style="width: 100%; height: 50px"
-            />
-          </div>
-          <div
-            class="grid-container ph-10 h-100 jc-center ji-center ai-center ac-center"
-            id="border"
-          >
-            <p>{{ user.data.name }}</p>
-          </div>
-          <div
-            class="grid-container ph-10 jc-center ji-center ai-center ac-center"
-            id="border"
-          >
-            <p>{{ user.data.email }}</p>
+                type="checkbox"
+                v-if="isAdmin"
+                v-model="user.selected"
+              />
+              <div v-else></div>
+
+              <div @click="openEditMode(user)" class="grid-container w-100 h-100" id="element-field">
+                <div
+                  class="grid-container ph-10 h-100 jc-center ji-center ai-center ac-center"
+                  id="border"
+                >
+                  <p>{{ user.data.name }}</p>
+                </div>
+                <div
+                  class="grid-container ph-10 jc-center ji-center ai-center ac-center"
+                  id="border"
+                >
+                  <p>{{ user.data.email }}</p>
+                </div>
+
+              </div>
           </div>
         </div>
       </div>
@@ -136,14 +137,26 @@ function openCreateMode() {
   overflow-x: auto !important;
 }
 
-#element {
+#element-row{
   grid-auto-flow: column;
-  grid-auto-columns: max-content;
-  gap: 1px;
+  grid-auto-columns: max-content 1fr;
   height: 75px;
 }
 
-#element > #border {
+#element-row>input[type="checkbox"]{
+  width: fit-content;
+}
+
+#element-field{
+  grid-auto-flow: column;
+  width: auto;
+  grid-auto-columns: max-content;
+}
+
+#element {
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 1px;
   height: 75px;
 }
 

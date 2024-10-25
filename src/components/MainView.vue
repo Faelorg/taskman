@@ -1,4 +1,14 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { getCurrentInstance, ref } from 'vue';
+
+
+let isAdmin = ref(false);
+
+const cookies =
+  getCurrentInstance()?.appContext.config.globalProperties.$cookies!;
+isAdmin = cookies.get("admin");
+
+</script>
 
 <template>
   <div id="main-container" class="grid-container bs-element br-10 bw-2 oc-bc">
@@ -37,6 +47,7 @@
 
       <RouterLink
         :to="{ name: 'settings' }"
+        v-if="isAdmin"
         active-class="sc-bg bs-panel"
         class="grid-container ac-center w-100 h-100 oc-bc pa-10"
       >

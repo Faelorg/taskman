@@ -14,13 +14,13 @@ const cookies =
   getCurrentInstance()?.appContext.config.globalProperties.$cookies!;
 
 let myTask = ref([
-  { name: "Отжуманя", code: "ID-83738" },
-  { name: "Отжуманя", code: "ID-86738" },
-  { name: "Отжуманя", code: "ID-87738" },
-  { name: "Отжуманя", code: "ID-88738" },
-  { name: "Отжуманя", code: "ID-89738" },
-  { name: "Отжуманя", code: "ID-81738" },
-  { name: "Отжуманя", code: "ID-84538" },
+  { name: "Анжуманя", code: "ID-83738" },
+  { name: "Анжуманя", code: "ID-86738" },
+  { name: "Анжуманя", code: "ID-87738" },
+  { name: "Анжуманя", code: "ID-88738" },
+  { name: "Анжуманя", code: "ID-89738" },
+  { name: "Анжуманя", code: "ID-81738" },
+  { name: "Анжуманя", code: "ID-84538" },
 ]);
 
 let myProject = ref([
@@ -69,10 +69,9 @@ function leaveAccaunt() {
 
         <div id="accordionBody" v-if="accordionUser" class="fc-fc fs-24">
           <div id="table" class="grid-container ai-center ac-center">
-            <p>Код</p>
-            <p>Название</p>
 
-            <label class="fs-24 fc-fc">E-mail</label>
+            <label class="fs-24 fc-fc">E-mail:
+            </label>
             <p class="fs-24 fc-fc">{{ user.data.email }}</p>
           </div>
         </div>

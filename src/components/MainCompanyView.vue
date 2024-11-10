@@ -1,61 +1,57 @@
-<script setup lang="ts">
-import { getCurrentInstance, onMounted, ref } from "vue";
-import { ICompany } from "../../../scripts/types";
-import { getCompanyAPI, updateCompanyAPI } from "../../../scripts/api";
+<script lang="ts" setup>
+import { getCurrentInstance, ref } from "vue";
+import { createCompanyAPI } from "../scripts/api";
 
-const cookies =
-  getCurrentInstance()?.appContext.config.globalProperties.$cookies!;
+let mails = [
+  {
+    name: "yandex",
+    server: "smtp.yandex.ru",
+    port: "465",
+  },
+  {
+    name: "mail",
+    server: "smtp.mail.ru",
+    port: "587",
+  },
+  {
+    name: "gmail",
+    server: "smtp.gmail.com",
+    port: "465",
+  },
+];
+
+let selectedMail = ref();
 const router = getCurrentInstance()?.appContext.config.globalProperties.$router;
-
-let maincolor = ref("");
-let additionalcolor = ref("");
-let panelcolor = ref("");
-let selectedbuttoncolor = ref("");
-let outlinecolor = ref("");
-let truebuttoncolor = ref("");
-let cancelbuttoncolor = ref("");
-let fontcolor = ref("");
-let additionalfontcolor = ref("");
-
-let company: ICompany;
-
-onMounted(() => {
-  getCompanyAPI(cookies.get("token")).then((c) => {
-    company = c.object;
-    maincolor.value = c.object.maincolor;
-    additionalcolor.value = c.object.additionalcolor;
-    additionalfontcolor.value = c.object.additionalfontcolor;
-    cancelbuttoncolor.value = c.object.cancelbuttoncolor;
-    fontcolor.value = c.object.fontcolor;
-    outlinecolor.value = c.object.outlinecolor;
-    panelcolor.value = c.object.panelcolor;
-    selectedbuttoncolor.value = c.object.selectedbuttoncolor;
-    truebuttoncolor.value = c.object.truebuttoncolor;
-  });
+let company = ref({
+  name: "",
+  maincolor: "#4e8cb5",
+  additionalcolor: "#d1e1ea",
+  panelcolor: "#8eb2c6",
+  outlinecolor: "#1e3d58",
+  truebuttoncolor: "#025c96",
+  cancelbuttoncolor: "#86000c",
+  selectedbuttoncolor: "#188700",
+  fontcolor: "#eef0f0",
+  additionalfontcolor: "#2db2bb",
+  codetask: "ID",
+  smtpsender: "",
+  smtpserver: "",
+  smtpport: "",
+  smtppassword: "",
 });
 
-function updateCompany() {
-  company.maincolor = maincolor.value;
-  company.additionalcolor = additionalcolor.value;
-  company.additionalfontcolor = additionalfontcolor.value;
-  company.cancelbuttoncolor = cancelbuttoncolor.value;
-  company.fontcolor = fontcolor.value;
-  company.outlinecolor = outlinecolor.value;
-  company.panelcolor = panelcolor.value;
-  company.selectedbuttoncolor = selectedbuttoncolor.value;
-  company.truebuttoncolor = truebuttoncolor.value;
+function createCompany() {
+  let mail = mails.find((x) => x.name == selectedMail.value);
 
-  updateCompanyAPI(cookies.get("token"), company).then((x) => {
+  company.value.smtpport = mail!.port;
+  company.value.smtpserver = mail!.server;
+
+  createCompanyAPI(company.value).then((x) => {
     if (x.code == "200") {
-      router.push({ name: "main", reload: true }).then(() => {
-        window.location.reload();
-      });
+      router.push({ name: "auth" });
+      return;
     }
-  });
-}
-function onCloseEdit() {
-  router.push({ name: "main" }).then(() => {
-    window.location.reload();
+    alert("Введите корректные данные");
   });
 }
 </script>
@@ -73,7 +69,11 @@ function onCloseEdit() {
           id="color-grid"
         >
           <label for="">Основной цвет</label>
-          <input type="color" class="w-100 h-100 ac-bg" v-model="maincolor" />
+          <input
+            type="color"
+            class="w-100 h-100 ac-bg"
+            v-model="company.maincolor"
+          />
         </div>
 
         <div
@@ -84,7 +84,7 @@ function onCloseEdit() {
           <input
             type="color"
             class="w-100 h-100 ac-bg"
-            v-model="additionalcolor"
+            v-model="company.additionalcolor"
           />
         </div>
 
@@ -93,7 +93,11 @@ function onCloseEdit() {
           id="color-grid"
         >
           <label for="">Цвет панелей</label>
-          <input type="color" class="w-100 h-100 ac-bg" v-model="panelcolor" />
+          <input
+            type="color"
+            class="w-100 h-100 ac-bg"
+            v-model="company.panelcolor"
+          />
         </div>
 
         <div
@@ -101,7 +105,11 @@ function onCloseEdit() {
           id="color-grid"
         >
           <label for="">Основной цвет текста</label>
-          <input type="color" class="w-100 h-100 ac-bg" v-model="fontcolor" />
+          <input
+            type="color"
+            class="w-100 h-100 ac-bg"
+            v-model="company.fontcolor"
+          />
         </div>
 
         <div
@@ -112,7 +120,7 @@ function onCloseEdit() {
           <input
             type="color"
             class="w-100 h-100 ac-bg grid-container as-center"
-            v-model="additionalfontcolor"
+            v-model="company.additionalfontcolor"
           />
         </div>
 
@@ -124,7 +132,7 @@ function onCloseEdit() {
           <input
             type="color"
             class="w-100 h-100 ac-bg grid-container as-center"
-            v-model="outlinecolor"
+            v-model="company.outlinecolor"
           />
         </div>
       </div>
@@ -141,7 +149,7 @@ function onCloseEdit() {
           <input
             type="color"
             class="w-100 h-100 ac-bg"
-            v-model="truebuttoncolor"
+            v-model="company.truebuttoncolor"
           />
         </div>
 
@@ -153,7 +161,7 @@ function onCloseEdit() {
           <input
             type="color"
             class="w-100 h-100 ac-bg"
-            v-model="selectedbuttoncolor"
+            v-model="company.selectedbuttoncolor"
           />
         </div>
 
@@ -165,7 +173,7 @@ function onCloseEdit() {
           <input
             type="color"
             class="w-100 h-100 ac-bg"
-            v-model="cancelbuttoncolor"
+            v-model="company.cancelbuttoncolor"
           />
         </div>
       </div>
@@ -190,27 +198,108 @@ function onCloseEdit() {
         </div>
       </div>
     </div>
+  </div>
+  <div class="ma-10 bs-panel pa-10 br-10 pc-bg grid-container" id="container">
+    <h1 class="fc-fc grid-container">Настройки компании</h1>
+    <div class="grid-container" id="company-grid">
+      <div
+        class="grid-container oc-bc br-10 bw-1 fc-fc fs-24 bs-panel pa-10 mc-bg w-100"
+        id="setting-grid"
+      >
+        <label for="">Название компании</label>
+        <input
+          type="text"
+          class="w-100 h-100 ac-bg br-10 oc-bc bw-1 afc-fc"
+          v-model="company.name"
+        />
+      </div>
+      <div
+        class="grid-container oc-bc br-10 bw-1 fc-fc fs-24 bs-panel pa-10 mc-bg w-100"
+        id="setting-grid"
+      >
+        <label for="">Шаблон кода задач</label>
+        <input
+          type="text"
+          class="w-100 h-100 ac-bg br-10 oc-bc bw-1 afc-fc"
+          v-model="company.codetask"
+        />
+      </div>
 
+      <div
+        class="grid-container oc-bc br-10 bw-1 fc-fc fs-24 bs-panel pa-10 mc-bg w-100"
+        id="setting-grid"
+      >
+        <label for="">Email провайдер</label>
+        <select
+          class="w-100 h-100 ac-bg br-10 oc-bc bw-1 afc-fc"
+          v-model="selectedMail"
+        >
+          <option value="yandex">Yandex.Ru</option>
+          <option value="mail">Mail.Ru</option>
+          <option value="gmail">Gmail.Com</option>
+        </select>
+      </div>
+
+      <div
+        class="grid-container oc-bc br-10 bw-1 fc-fc fs-24 bs-panel pa-10 mc-bg w-100"
+        id="setting-grid"
+      >
+        <label for="">Почтовый ящик</label>
+        <input
+          type="email"
+          class="w-100 h-100 ac-bg br-10 oc-bc bw-1 afc-fc"
+          v-model="company.smtpsender"
+        />
+      </div>
+
+      <div
+        class="grid-container oc-bc br-10 bw-1 fc-fc fs-24 bs-panel pa-10 mc-bg w-100"
+        id="setting-grid"
+      >
+        <label for="">Пароль</label>
+        <input
+          type="password"
+          class="w-100 h-100 ac-bg br-10 oc-bc bw-1 afc-fc"
+          v-model="company.smtppassword"
+        />
+      </div>
+    </div>
     <div id="button-panel" class="grid-container">
       <div></div>
       <button
         class="sb-bg pa-10 oc-bc bw-1 br-10 fc-fc fs-24 bs-element"
-        @click="updateCompany"
+        @click="createCompany()"
       >
-        Сохранить
-      </button>
-
-      <button
-        class="cb-bg pa-10 oc-bc bw-1 br-10 fc-fc fs-24 bs-element"
-        @click="onCloseEdit"
-      >
-        Отменить
+        Создать
       </button>
     </div>
   </div>
 </template>
 
 <style scoped>
+#container {
+  gap: 15px;
+  grid-template-rows: auto 1fr;
+  text-wrap: wrap;
+}
+
+#setting-grid {
+  grid-template-columns: max-content 1fr;
+  gap: 15px;
+  height: max-content;
+}
+
+#company-grid {
+  gap: 15px;
+  grid-auto-rows: max-content;
+  justify-content: left;
+}
+
+#button-panel {
+  gap: 15px;
+  grid-template-columns: max-content max-content 1fr;
+}
+
 #container {
   gap: 15px;
   grid-template-rows: auto 1fr;

@@ -1,22 +1,38 @@
 <script setup lang="ts">
 import { getCurrentInstance, ref } from "vue";
-import { loginAPI } from "../../scripts/api";
+import { getCompanyAPI, loginAPI } from "../../scripts/api";
 
 const cookies =
   getCurrentInstance()?.appContext.config.globalProperties.$cookies!;
+const router = getCurrentInstance()?.appContext.config.globalProperties.$router;
 
 let login = ref("");
 let password = ref("");
 
-function loginFunction(l: string, p: string) {
-  cookies.set("token", loginAPI(l, p));
-  console.log(cookies.get("token"));
+async function loginFunction(l: string, p: string) {
+  let res = await loginAPI(l, p);
+  if (res.code == "200") {
+    cookies.set("login", l);
+    cookies.set("password", p);
+    cookies.set("token", res.object);
+    let com = await getCompanyAPI(cookies.get("token"));
+    console.log(com);
+
+    if (com.code == "200") {
+      cookies.set("company", com.object.name);
+      cookies.set("companyId", com.object.id_company);
+      router.go({ name: "home", params: { companyName: com.object.name } });
+      return;
+    }
+  }
+
+  alert("Неверный логин или пароль");
 }
 </script>
 
 <template>
   <div class="grid-container ji-center js-center w-100" id="input-container">
-    <label class="fc-fc fs-28 ff-semibold">Логин</label>
+    <label class="fc-fc fs-28 ff-semibold">Логин/Email</label>
     <input
       id="loginInput"
       type="text"

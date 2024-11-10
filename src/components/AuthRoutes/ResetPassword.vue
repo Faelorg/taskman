@@ -1,21 +1,26 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { restoreAPI } from "../../scripts/api";
+import { getCurrentInstance, ref } from "vue";
+import { resetPasswordAPI, restoreAPI } from "../../scripts/api";
 
-let email = ref("");
+let password = ref("");
+const router = getCurrentInstance()?.appContext.config.globalProperties.$router;
+let id_invite = router.currentRoute._value.params.resetId;
+async function restorePassword() {
+  let res = await resetPasswordAPI(password.value, id_invite);
 
-function restorePassword() {
-  restoreAPI(email.value);
+  if (res.code == "200") {
+    router.push({ name: "auth" });
+  }
 }
 </script>
 
 <template>
   <div class="grid-container ji-center js-center w-100" id="input-container">
-    <label class="fc-fc fs-28 ff-semibold">Email</label>
+    <label class="fc-fc fs-28 ff-semibold">Новый пароль</label>
     <input
       id="loginInput"
-      type="text"
-      v-model="email"
+      type="password"
+      v-model="password"
       class="grid-container mh-25 js-center ac-bg br-10 pa-10 w-100 bs-panel oc-bc bw-2 afc-fc fs-28"
     />
   </div>
@@ -24,7 +29,7 @@ function restorePassword() {
       class="tb-bg fc-fc pv-10 ph-10 w-100 fs-24 br-15 bw-2 oc-bc bs-element"
       @click="restorePassword()"
     >
-      Забыли пароль
+      Сменить
     </button>
 
     <RouterLink

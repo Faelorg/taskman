@@ -18,6 +18,11 @@ const router = getCurrentInstance()?.appContext.config.globalProperties
         <RouterView />
       </div>
     </div>
+    <div class="fc-fc" id="createCompany">
+      <RouterLink :to="{ name: 'createCompany' }" class="fc-fc">
+        Создать компанию
+      </RouterLink>
+    </div>
   </div>
 </template>
 
@@ -32,5 +37,15 @@ const router = getCurrentInstance()?.appContext.config.globalProperties
 
 #form-container {
   gap: 25px;
+}
+
+#createCompany {
+  position: absolute;
+  right: 5%;
+  bottom: 5%;
+}
+
+a {
+  text-align: center;
 }
 </style>

@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import { getCurrentInstance, ref } from "vue";
-
-let user = ref({
-  selected: false,
-  data: {
-    id: "1",
-    name: "fael",
-    email: "faewl@fckje.com",
-  },
-});
+import {
+  getCurrentInstance,
+  onMounted,
+  onBeforeMount,
+  ref,
+  watch,
+  onBeforeUpdate,
+} from "vue";
+import { getProfileAPI, logoutAPI } from "../../scripts/api";
 
 const cookies =
   getCurrentInstance()?.appContext.config.globalProperties.$cookies!;
+const router = getCurrentInstance()?.appContext.config.globalProperties.$router;
+let user = ref({
+  selected: false,
+  data: {} as any,
+});
+getProfileAPI(cookies.get("token")).then((x) => (user.value.data = x.object));
+
+onMounted(async () => {});
 
 let myTask = ref([
   { name: "Анжуманя", code: "ID-83738" },
@@ -43,15 +50,26 @@ function openAccordion(opened: boolean) {
 }
 
 function leaveAccaunt() {
+  logoutAPI(cookies.get("token"));
   cookies.remove("token");
+  cookies.remove("login");
+  cookies.remove("password");
+  cookies.remove("company");
   cookies.remove("admin");
+  router.push({ name: "auth" });
 }
 </script>
 
 <template>
   <div class="main-container pa-10 ac-bg">
     <div class="pc-bg grid-container br-10 bs-panel pa-25" id="container">
-      <p class="fs-32 fc-fc">Профиль: {{ user.data.name }}</p>
+      <p
+        class="fs-32 fc-fc"
+        v-if="user.data.firstname != null && user.data.lastname != null"
+      >
+        Профиль: {{ user.data.firstname }} {{ user.data.lastname }}
+      </p>
+      <p class="fs-32 fc-fc" v-else>Профиль: {{ user.data.email }}</p>
 
       <div
         id="accordion"
@@ -69,70 +87,34 @@ function leaveAccaunt() {
 
         <div id="accordionBody" v-if="accordionUser" class="fc-fc fs-24">
           <div id="table" class="grid-container ai-center ac-center">
-
-            <label class="fs-24 fc-fc">E-mail:
-            </label>
+            <label class="fs-24 fc-fc">E-mail: </label>
             <p class="fs-24 fc-fc">{{ user.data.email }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div
-        id="accordion"
-        class="grid-container mc-bg pa-10 br-10 bw-1 oc-bc bs-element"
-      >
-        <div
-          @click="accordionTask = openAccordion(accordionTask)"
-          class="grid-container ai-center ac-center"
-          id="accordionTitle"
-        >
-          <p class="fc-fc fs-24">Мои задачи</p>
-          <p class="fc-fc fs-18" v-if="!accordionTask">&#9660;</p>
-          <p class="fc-fc fs-18" v-else>&#9650;</p>
-        </div>
-
-        <div id="accordionBody" v-if="accordionTask" class="fc-fc fs-24">
-          <div id="table" class="grid-container ai-center ac-center">
-            <p>Код</p>
-            <p>Название</p>
-            <template
-              v-for="task of myTask"
-              class="grid-container ai-center ac-center"
-              id="table"
-            >
-              <p>{{ task.code }}</p>
-              <p>{{ task.name }}</p>
-            </template>
-          </div>
-        </div>
-      </div>
-
-      <div
-        id="accordion"
-        class="grid-container mc-bg pa-10 br-10 bw-1 oc-bc bs-element"
-      >
-        <div
-          @click="accordionProject = openAccordion(accordionProject)"
-          class="grid-container ai-center ac-center"
-          id="accordionTitle"
-        >
-          <p class="fc-fc fs-24">Мои проекты</p>
-          <p class="fc-fc fs-18" v-if="!accordionProject">&#9660;</p>
-          <p class="fc-fc fs-18" v-else>&#9650;</p>
-        </div>
-
-        <div id="accordionBody" v-if="accordionProject" class="fc-fc fs-24">
-          <div id="table" class="grid-container ai-center ac-center">
-            <p>Код</p>
-            <p>Название</p>
-            <template
-              v-for="project of myProject"
-              class="grid-container ai-center ac-center"
-              id="table"
-            >
-              <p>{{ project.code }}</p>
-              <p>{{ project.name }}</p>
-            </template>
+            <label class="fs-24 fc-fc">Логин: </label>
+            <p class="fs-24 fc-fc">{{ user.data.login }}</p>
+            <label class="fs-24 fc-fc" v-if="user.data.firstname"
+              >Фамилия:
+            </label>
+            <p class="fs-24 fc-fc" v-if="user.data">
+              {{
+                user.data.firstname == null ? "Не указана" : user.data.firstname
+              }}
+            </p>
+            <label class="fs-24 fc-fc" v-if="user.data.firstname">Имя: </label>
+            <p class="fs-24 fc-fc" v-if="user.data">
+              {{
+                user.data.lastname == null ? "Не указана" : user.data.lastname
+              }}
+            </p>
+            <label class="fs-24 fc-fc" v-if="user.data.firstname"
+              >Отчество:
+            </label>
+            <p class="fs-24 fc-fc" v-if="user.data">
+              {{
+                user.data.middlename == null
+                  ? "Не указана"
+                  : user.data.middlename
+              }}
+            </p>
           </div>
         </div>
       </div>

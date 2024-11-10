@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getCurrentInstance, ref } from "vue";
-import { inviteUserAPI } from "../../../scripts/api";
+import { IProject } from "../../../scripts/types";
+import { createProjectAPI, getCompanyAPI } from "../../../scripts/api";
 
 const cookies =
   getCurrentInstance()?.appContext.config.globalProperties.$cookies!;
@@ -8,27 +9,45 @@ const router = getCurrentInstance()?.appContext.config.globalProperties.$router;
 
 let isAdmin = ref(cookies.get("admin"));
 
-let user = ref({
-  selected: false,
-  data: {
-    email: "",
-  },
-});
+let project = ref({
+  name: "",
+  description: "",
+} as IProject);
 
-function inviteUser() {
-  inviteUserAPI(user.value.data.email, cookies.get("token")).then((x) => {
-    if (x.code == "200") {
-      router.push({
-        name: "people",
+function createProject() {
+  if (isAdmin) {
+    getCompanyAPI(cookies.get("token")).then((x) => {
+      createProjectAPI(
+        cookies.get("token"),
+        x.object.id_company,
+        project.value
+      ).then((x) => {
+        if (x.code == "403") {
+          router.push({ name: "403" });
+          return;
+        }
+
+        if (x.code != "200") {
+          alert("При создании возникла ошибка");
+          return;
+        }
+
+        router.go({ name: "project" }).then(() => {
+          window.location.reload();
+        });
       });
-    }
-  });
+    });
+  }
 }
 
 function onCloseEdit() {
-  router.push({
-    name: "people",
-  });
+  router
+    .push({
+      name: "project",
+    })
+    .then(() => {
+      window.location.reload();
+    });
 }
 </script>
 
@@ -40,17 +59,22 @@ function onCloseEdit() {
     <div
       class="grid-container ai-center fs-32 fc-fc mc-bg pa-10 br-10 bw-1 oc-bc bs-panel"
     >
-      <p>Создать сотрудника</p>
+      <p>Создать проект</p>
     </div>
 
     <div
       class="grid-container fc-fc fs-24 h-100 mc-bg pa-10 br-10 bw-1 oc-bc bs-panel"
       id="data-container"
     >
-      <div>Почта</div>
+      <div>Название</div>
       <input
-        v-model="user!.data.email"
-        type="email"
+        v-model="project!.name"
+        class="grid-container mh-25 js-center ac-bg br-10 pa-10 w-100 bs-panel oc-bc bw-2 afc-fc fs-18"
+      />
+
+      <div>Описание</div>
+      <textarea
+        v-model="project!.description"
         class="grid-container mh-25 js-center ac-bg br-10 pa-10 w-100 bs-panel oc-bc bw-2 afc-fc fs-18"
       />
     </div>
@@ -62,9 +86,9 @@ function onCloseEdit() {
       <button
         class="pa-10 br-10 oc-bc bw-1 sb-bg fc-fc fs-32 grid-container bs-element ac-center"
         v-if="isAdmin == 1"
-        @click="inviteUser()"
+        @click="createProject"
       >
-        Пригласить
+        Сохранить
       </button>
 
       <button
@@ -80,21 +104,25 @@ function onCloseEdit() {
 <style scoped>
 #modal-container {
   grid-auto-flow: row;
-  grid-auto-rows: 1fr auto 1fr;
+  grid-auto-rows: max-content auto max-content;
   gap: 15px;
 }
 
 #data-container {
-  grid-auto-rows: auto;
+  grid-auto-rows: max-content;
   justify-content: left;
   gap: 10px;
-
-  height: 100%;
+  grid-template-columns: max-content max-content;
   overflow-y: auto !important;
 }
 
 #button-control {
   grid-template-columns: max-content max-content max-content 1fr;
   gap: 15px;
+}
+
+textarea {
+  resize: vertical;
+  height: 150px;
 }
 </style>

@@ -1,54 +1,38 @@
 <script setup lang="ts">
 import { getCurrentInstance, onMounted, ref } from "vue";
-import { getAllUserAPI, removeUsersAPI } from "../../scripts/api";
-import { IUser } from "../../scripts/types";
-
-let users = ref([] as { selected: boolean; data: IUser }[]);
-
-onMounted(() => {
-  getAllUserAPI(cookies.get("token")).then((x) => {
-    x.object.forEach((u) => users.value.push({ selected: false, data: u }));
-  });
-});
+import { getAllRoleAPI } from "../../../scripts/api";
+import { IRole } from "../../../scripts/types";
 
 const cookies =
   getCurrentInstance()?.appContext.config.globalProperties.$cookies!;
 const router = getCurrentInstance()?.appContext.config.globalProperties.$router;
 
-router.push({ name: "people" });
-
+let isAdmin = ref(cookies.get("admin"));
 let openModal = ref(false);
+let roles = ref([] as IRole[]);
 
-let isAdmin = cookies.get("admin");
+onMounted(() => {
+  getAllRoleAPI(
+    cookies.get("token"),
+    cookies.get("companyId"),
+    router.currentRoute._value.params.idProject
+  ).then((x) => {
+    roles.value = x.object;
+  });
+});
 
-function openEditMode(user: any) {
-  openModal = ref(true);
+function openRole(id_role: string) {
   router.push({
-    name: "person",
+    name: "role",
     params: {
-      idPerson: user.data.id_user,
+      idProject: router.currentRoute._value.params.idProject,
+      idRole: id_role,
     },
   });
 }
-function openCreateMode() {
-  openModal = ref(true);
-  router.push({ name: "add" });
-}
 
-function removeUsers() {
-  let selected: string[] = [];
-
-  users.value.forEach((user) => {
-    if (user.selected) {
-      selected.push(user.data.id_user);
-    }
-  });
-
-  removeUsersAPI(cookies.get("token"), selected).then((x) => {
-    if (x.code == "200") {
-      router.go({ name: "people" });
-    }
-  });
+function openCreate() {
+  router.push({ name: "createRole" });
 }
 </script>
 
@@ -72,15 +56,9 @@ function removeUsers() {
       >
         <button
           class="sb-bg pa-10 oc-bc bw-1 br-10 fc-fc fs-24 bs-element"
-          @click="openCreateMode()"
+          @click="openCreate"
         >
-          Пригласить
-        </button>
-        <button
-          class="cb-bg pa-10 oc-bc bw-1 br-10 fc-fc fs-24 bs-element"
-          @click="removeUsers"
-        >
-          Удалить
+          Создать
         </button>
       </div>
 
@@ -89,16 +67,13 @@ function removeUsers() {
         id="element-container"
       >
         <div
-          v-for="user of users"
+          v-for="role of roles"
           id="element"
           class="grid-container pc-bg w-100 ph-10 br-10 ph-10 bw-1 fs-18 oc-bc bs-element ac-center h-100"
         >
           <div class="grid-container w-100 h-100" id="element-row">
-            <input type="checkbox" v-if="isAdmin" v-model="user.selected" />
-            <div v-else></div>
-
             <div
-              @click="openEditMode(user)"
+              @click="openRole(role.id_role)"
               class="grid-container w-100 h-100"
               id="element-field"
             >
@@ -106,31 +81,13 @@ function removeUsers() {
                 class="grid-container ph-10 jc-center ji-center ai-center ac-center"
                 id="border"
               >
-                <p>{{ user.data.email }}</p>
+                <p>{{ role.name }}</p>
               </div>
               <div
                 class="grid-container ph-10 jc-center ji-center ai-center ac-center"
                 id="border"
               >
-                <p>{{ user.data.login }}</p>
-              </div>
-              <div
-                class="grid-container ph-10 jc-center ji-center ai-center ac-center"
-                id="border"
-              >
-                <p>{{ user.data.firstname }}</p>
-              </div>
-              <div
-                class="grid-container ph-10 jc-center ji-center ai-center ac-center"
-                id="border"
-              >
-                <p>{{ user.data.lastname }}</p>
-              </div>
-              <div
-                class="grid-container ph-10 jc-center ji-center ai-center ac-center"
-                id="border"
-              >
-                <p>{{ user.data.middlename }}</p>
+                <p>{{ role.description }}</p>
               </div>
             </div>
           </div>
